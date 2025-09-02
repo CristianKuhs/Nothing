@@ -1,149 +1,161 @@
-<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Calculadora de Horas Extras (CLT)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora CLT - Horas Extras e Salário</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#0b0f14;
-      --card:#141b24;
-      --muted:#9aa4b2;
-      --accent:#7c5cff;
-      --accent-2:#00d4ff;
-      --success:#27c38a;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top left, #1a1a1a, #0d0d0d);
+      color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    body{
-      font-family:Inter, Arial, sans-serif;
-      background:var(--bg);
-      color:#e6eef6;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
+    .container {
+      width: 100%;
+      max-width: 550px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(14px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease;
     }
-    .container{
-      width:100%;
-      max-width:900px;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+      color: #00ffcc;
+      letter-spacing: 1px;
     }
-    .card{
-      background:var(--card);
-      border-radius:12px;
-      padding:20px;
-      box-shadow:0 6px 16px rgba(0,0,0,0.4);
+    .field {
+      margin-bottom: 18px;
     }
-    h1{font-size:1.4rem;margin-bottom:6px}
-    p{color:var(--muted);font-size:0.9rem;margin-bottom:12px}
-    .form-row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
-    .field{flex:1;display:flex;flex-direction:column;min-width:180px}
-    label{font-size:0.8rem;color:var(--muted);margin-bottom:4px}
-    input[type="number"]{
-      background:#1c252f;
-      border:1px solid #2a3542;
-      padding:10px;
-      border-radius:8px;
-      color:#fff;
-      font-size:1rem;
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #ddd;
     }
-    input[type="number"]:focus{outline:1px solid var(--accent)}
-    .minutes{display:flex;gap:8px}
-    .actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-    .btn{padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
-    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081322}
-    .btn-ghost{background:#1c252f;border:1px solid #2a3542;color:var(--muted)}
-    .result{margin-top:16px;display:flex;flex-direction:column;gap:8px}
-    .row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #2a3542}
-    .row:last-child{border-bottom:0}
-    .big{font-size:1.1rem;font-weight:700}
-    footer{margin-top:12px;color:var(--muted);font-size:0.8rem}
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      outline: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      transition: all 0.2s ease;
+    }
+    input:focus {
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 0 2px #00ffcc;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00ffcc, #0077ff);
+      color: #0d0d0d;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 10px;
+    }
+    button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 14px rgba(0, 255, 200, 0.5);
+    }
+    .result {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.08);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    .highlight {
+      color: #00ffcc;
+      font-weight: bold;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
-  <main class="container">
-    <section class="card">
-      <h1>Calculadora de Horas Extras (CLT)</h1>
-      <p>Calcule horas extras com base na CLT — jornada padrão 44h/sem (220h/mês).</p>
-      <form id="calcForm" onsubmit="return false">
-        <div class="form-row">
-          <div class="field">
-            <label for="salary">Salário mensal (R$)</label>
-            <input id="salary" type="number" min="0" step="0.01" value="">
-          </div>
-          <div class="field">
-            <label for="monthlyHours">Horas mensais</label>
-            <input id="monthlyHours" type="number" min="1" step="1" value="220">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="field">
-            <label>50% (horas e minutos)</label>
-            <div class="minutes">
-              <input id="h50" type="number" placeholder="Horas" min="0" step="1" value="">
-              <input id="m50" type="number" placeholder="Minutos" min="0" max="59" step="1" value="">
-            </div>
-          </div>
-          <div class="field">
-            <label>100% (horas e minutos)</label>
-            <div class="minutes">
-              <input id="h100" type="number" placeholder="Horas" min="0" step="1" value="">
-              <input id="m100" type="number" placeholder="Minutos" min="0" max="59" step="1" value="">
-            </div>
-          </div>
-        </div>
-        <div class="actions">
-          <button id="calcBtn" class="btn btn-primary" type="button">Calcular</button>
-          <button id="clearBtn" class="btn btn-ghost" type="button">Limpar</button>
-        </div>
-        <div class="result" id="resultBox">
-          <div class="row"><div>Valor da hora</div><div id="hourValue" class="big">R$ 0,00</div></div>
-          <div class="row"><div>Hora extra 50%</div><div id="hour50">R$ 0,00</div></div>
-          <div class="row"><div>Hora extra 100%</div><div id="hour100">R$ 0,00</div></div>
-          <div class="row"><div>Total 50%</div><div id="total50">R$ 0,00</div></div>
-          <div class="row"><div>Total 100%</div><div id="total100">R$ 0,00</div></div>
-          <div class="row"><div>Total Extras</div><div id="totalExtras" class="big">R$ 0,00</div></div>
-          <div class="row"><div>Total Geral</div><div id="grossTotal" class="big">R$ 0,00</div></div>
-        </div>
-        <footer>
-          Esta calculadora aplica regras básicas da CLT (adicionais de 50% e 100% sobre a hora normal). Para casos com adicional noturno, banco de horas, insalubridade ou descontos, consulte o DP.
-        </footer>
-      </form>
-    </section>
-  </main>
+  <div class="container">
+    <h1>Calculadora CLT</h1>
+    <div class="field">
+      <label for="salario">Salário Base (R$):</label>
+      <input type="number" id="salario" placeholder="Ex: 2300" min="0">
+    </div>
+    <div class="field">
+      <label for="antecipacao">Antecipação (R$):</label>
+      <input type="number" id="antecipacao" placeholder="Ex: 1000" min="0">
+    </div>
+    <div class="field">
+      <label for="horas50">Horas Extras 50% (hh:mm):</label>
+      <input type="text" id="horas50" placeholder="Ex: 08:41">
+    </div>
+    <div class="field">
+      <label for="horas100">Horas Extras 100% (hh:mm):</label>
+      <input type="text" id="horas100" placeholder="Ex: 04:22">
+    </div>
+    <button onclick="calcular()">Calcular</button>
+    <div class="result" id="resultado"></div>
+  </div>
+
   <script>
-    const el = id => document.getElementById(id);
-    const fmt = num => num.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-    function minutesToDecimal(h,m){return (Number(h)||0)+(Number(m)||0)/60;}
-    function calculate(){
-      const salary=Number(el('salary').value)||0;
-      const monthly=Number(el('monthlyHours').value)||220;
-      const hourVal= monthly? salary/monthly:0;
-      const dec50=minutesToDecimal(el('h50').value,el('m50').value);
-      const dec100=minutesToDecimal(el('h100').value,el('m100').value);
-      const hour50=hourVal*1.5;
-      const hour100=hourVal*2;
-      const total50=dec50*hour50;
-      const total100=dec100*hour100;
-      const extras=total50+total100;
-      const gross=salary+extras;
-      el('hourValue').textContent=fmt(hourVal);
-      el('hour50').textContent=fmt(hour50);
-      el('hour100').textContent=fmt(hour100);
-      el('total50').textContent=fmt(total50);
-      el('total100').textContent=fmt(total100);
-      el('totalExtras').textContent=fmt(extras);
-      el('grossTotal').textContent=fmt(gross);
+    function parseHorasMinutos(hm) {
+      if (!hm || !hm.includes(":")) return 0;
+      let [h, m] = hm.split(":").map(Number);
+      return h + (m / 60);
     }
-    document.getElementById('calcBtn').addEventListener('click',calculate);
-    document.getElementById('clearBtn').addEventListener('click',()=>{
-      ['salary','h50','m50','h100','m100'].forEach(id=>el(id).value='');
-      el('monthlyHours').value=220;
-      calculate();
-    });
+
+    function calcular() {
+      const salario = parseFloat(document.getElementById('salario').value) || 0;
+      const antecipacao = parseFloat(document.getElementById('antecipacao').value) || 0;
+      const horas50 = parseHorasMinutos(document.getElementById('horas50').value);
+      const horas100 = parseHorasMinutos(document.getElementById('horas100').value);
+
+      if (salario <= 0) {
+        document.getElementById('resultado').innerHTML = "<span class='highlight'>Informe um salário válido.</span>";
+        return;
+      }
+
+      // valor hora pela CLT (220h)
+      const valorHora = salario / 220;
+
+      // valores horas extras
+      const valorHora50 = valorHora * 1.5;
+      const valorHora100 = valorHora * 2;
+
+      const total50 = horas50 * valorHora50;
+      const total100 = horas100 * valorHora100;
+
+      const totalExtras = total50 + total100;
+      const liquido = (salario - antecipacao) + totalExtras;
+
+      document.getElementById('resultado').innerHTML = `
+        Valor hora normal: <span class="highlight">R$ ${valorHora.toFixed(2)}</span><br>
+        Hora extra 50%: <span class="highlight">R$ ${valorHora50.toFixed(2)}</span><br>
+        Hora extra 100%: <span class="highlight">R$ ${valorHora100.toFixed(2)}</span><br><br>
+        Total horas 50%: <span class="highlight">R$ ${total50.toFixed(2)}</span><br>
+        Total horas 100%: <span class="highlight">R$ ${total100.toFixed(2)}</span><br>
+        <hr>
+        Total horas extras: <span class="highlight">R$ ${totalExtras.toFixed(2)}</span><br>
+        Salário - Antecipação: <span class="highlight">R$ ${(salario - antecipacao).toFixed(2)}</span><br>
+        <strong>Valor líquido no 5º dia útil: <span class="highlight">R$ ${liquido.toFixed(2)}</span></strong>
+      `;
+    }
   </script>
 </body>
 </html>
